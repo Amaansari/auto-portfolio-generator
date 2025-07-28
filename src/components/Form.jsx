@@ -11,28 +11,74 @@ const Form = () => {
   const onHandleSubmit = async (e) => {
     e.preventDefault();
   
+    const { fullName, jobTitle, bio, color } = formData;
+  
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>${fullName}'s Portfolio</title>
+        <style>
+          body {
+            font-family: sans-serif;
+            padding: 40px;
+            background-color: #f9f9f9;
+            color: ${color};
+          }
+          h1 { font-size: 2.5rem; }
+          h2 { font-size: 1.5rem; }
+          p { font-size: 1rem; margin-top: 1rem; }
+        </style>
+      </head>
+      <body>
+        <h1>${fullName}</h1>
+        <h2>${jobTitle}</h2>
+        <p>${bio}</p>
+      </body>
+      </html>
+    `;
+  
+    const payload = {
+      name: `portfolio-${Date.now()}`,
+      files: [
+        {
+          file: "index.html",
+          data: htmlContent,
+        }
+      ],
+      projectSettings: {
+        outputDirectory: "."
+      },
+      target: "production"
+    };
+  
     try {
-      const response = await fetch("https://vercel-api-backend.onrender.com", {
+      const response = await fetch("https://api.vercel.com/v13/deployments", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          Authorization: `Bearer cAcIA4rQGhwNnUycWioe7tlp`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload),
       });
   
       const data = await response.json();
   
       if (response.ok) {
-        alert("Deployed! URL: https://" + data.url);
+        alert("✅ Deployed! URL: https://" + data.url);
+        console.log("Deployment result:", data);
       } else {
-        alert("Deployment failed");
-        console.error(data.error);
+        console.error("Deployment failed:", data);
+        alert("❌ Deployment failed: " + data.error?.message || "Unknown error");
       }
-    } catch (err) {
-      alert("Server error");
-      console.error(err);
+    } catch (error) {
+      console.error("Fetch error:", error);
+      alert("❌ Network or server error during deployment.");
     }
   };
+  
   
 
   const onInputChange = (e) => {
