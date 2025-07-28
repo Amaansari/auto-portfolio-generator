@@ -49,7 +49,12 @@ const Form = () => {
         }
       ],
       projectSettings: {
-        outputDirectory: "."
+        devCommand: null,
+        installCommand: null,
+        buildCommand: null,
+        outputDirectory: ".",
+        rootDirectory: null,
+        framework: null
       },
       target: "production"
     };
